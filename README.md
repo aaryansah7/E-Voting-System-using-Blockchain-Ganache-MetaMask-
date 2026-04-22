@@ -197,12 +197,12 @@ All 5 test cases passed:
 
 ## 👥 Team
 
-| Name | Roll No | GitHub |
-|------|---------|--------|
-| [Member 1] | [Roll No] | [@username](https://github.com/username) |
-| [Member 2] | [Roll No] | [@username](https://github.com/username) |
-| [Member 3] | [Roll No] | [@username](https://github.com/username) |
-| [Member 4] | [Roll No] | [@username](https://github.com/username) |
+| Name | Roll No |
+|------|---------|
+| [Aaryan Sah] | [2306528] |
+| [Agniv Banerjee] | [2304952] |
+| [Aum Tripathi] | [2390080] |
+
 
 ---
 
@@ -216,5 +216,3 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 - [Ethereum Foundation](https://ethereum.org/) for blockchain infrastructure documentation
 - [Truffle Suite](https://trufflesuite.com/) for smart contract development tools
-- [FastAPI](https://fastapi.tiangolo.com/) for the lightweight Python web framework
-- Research papers cited in the [Literature Survey](../../wiki/Literature-Survey)

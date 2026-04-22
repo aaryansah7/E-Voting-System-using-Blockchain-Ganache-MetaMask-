@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Portal — Decentralized Voting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #080c14;
+        --surface: #0d1220;
+        --surface2: #111827;
+        --border: rgba(99, 179, 237, 0.15);
+        --accent: #38bdf8;
+        --accent2: #818cf8;
+        --success: #34d399;
+        --text: #e2e8f0;
+        --muted: #64748b;
+        --glow: 0 0 30px rgba(56, 189, 248, 0.12);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animated background grid */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      body::after {
+        content: '';
+        position: fixed;
+        top: -200px; right: -200px;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(129,140,248,0.07) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ---- HEADER ---- */
+      #head {
+        position: relative;
+        z-index: 1;
+        padding: 48px 24px 32px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(56,189,248,0.04) 0%, transparent 100%);
+      }
+
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(56,189,248,0.08);
+        border: 1px solid rgba(56,189,248,0.25);
+        border-radius: 100px;
+        padding: 6px 16px;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        animation: fadeDown 0.6s ease both;
+      }
+
+      .badge-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 8px var(--success);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+      }
+
+      h1 {
+        font-size: clamp(22px, 4vw, 38px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        background: linear-gradient(135deg, #e2e8f0 30%, var(--accent) 70%, var(--accent2) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeDown 0.6s 0.1s ease both;
+      }
+
+      .header-sub {
+        margin-top: 10px;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.05em;
+        animation: fadeDown 0.6s 0.2s ease both;
+      }
+
+      @keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ---- LAYOUT ---- */
+      .main {
+        position: relative;
+        z-index: 1;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      /* ---- CARDS ---- */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 36px 40px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--glow), 0 4px 32px rgba(0,0,0,0.4);
+        animation: fadeUp 0.7s ease both;
+      }
+
+      .card:nth-child(2) { animation-delay: 0.1s; }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Accent corner glow */
+      .card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 160px; height: 160px;
+        background: radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 70%);
+        pointer-events: none;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 32px;
+      }
+
+      .card-icon {
+        width: 42px; height: 42px;
+        border-radius: 12px;
+        background: rgba(56,189,248,0.1);
+        border: 1px solid rgba(56,189,248,0.2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.01em;
+      }
+
+      .card-subtitle {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+        font-weight: 400;
+      }
+
+      /* ---- FORM GRID ---- */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 28px;
+      }
+
+      @media (max-width: 560px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .card { padding: 24px 20px; }
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-family: 'Space Mono', monospace;
+      }
+
+      input[type="text"],
+      input[type="date"] {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 18px;
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        width: 100%;
+        color-scheme: dark;
+      }
+
+      input[type="text"]::placeholder { color: var(--muted); }
+
+      input[type="text"]:focus,
+      input[type="date"]:focus {
+        border-color: var(--accent);
+        background: rgba(56,189,248,0.04);
+        box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
+      }
+
+      /* ---- BUTTONS ---- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 28px;
+        border-radius: 12px;
+        border: none;
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+        transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: white;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+
+      .btn:hover::after { opacity: 0.06; }
+      .btn:active { transform: scale(0.97); }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent) 0%, #0ea5e9 100%);
+        color: #080c14;
+        box-shadow: 0 4px 20px rgba(56,189,248,0.3);
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 6px 28px rgba(56,189,248,0.45);
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, var(--accent2) 0%, #6366f1 100%);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(129,140,248,0.25);
+      }
+
+      .btn-secondary:hover {
+        box-shadow: 0 6px 28px rgba(129,140,248,0.4);
+        transform: translateY(-1px);
+      }
+
+      /* ---- FEEDBACK ---- */
+      .feedback {
+        margin-top: 16px;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        min-height: 18px;
+        color: var(--success);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .feedback.show { opacity: 1; }
+
+      /* ---- DIVIDER ---- */
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 28px 0;
+      }
+
+      /* ---- CHAIN INFO STRIP ---- */
+      .chain-strip {
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid var(--border);
+        padding: 16px 24px;
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        flex-wrap: wrap;
+      }
+
+      .chain-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .chain-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 6px var(--success);
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- HEADER -->
+    <div id="head">
+      <div class="header-badge">
+        <span class="badge-dot"></span>
+        Ethereum Mainnet
+      </div>
+      <h1>Decentralized Voting<br>Admin Portal</h1>
+      <p class="header-sub">Secured by Ethereum Blockchain · Smart Contract Layer</p>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+
+      <!-- Add Candidate Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🗳️</div>
+          <div>
+            <div class="card-title">Add Candidate</div>
+            <div class="card-subtitle">Register a new candidate to the smart contract</div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="name">Candidate Name</label>
+            <input id="name" type="text" name="name" placeholder="Full name" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="party">Party / Affiliation</label>
+            <input id="party" type="text" name="party" placeholder="Party name">
+          </div>
+        </div>
+
+        <button id="addCandidate" class="btn btn-primary">
+          <span>＋</span> Add Candidate
+        </button>
+
+        <div id="Aday" class="feedback"></div>
+      </div>
+
+      <!-- Define Voting Dates Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📅</div>
+          <div>
+            <div class="card-title">Voting Window</div>
+            <div class="card-subtitle">Set the on-chain start and end dates for this election</div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="startDate">Start Date</label>
+            <input id="startDate" type="date" name="">
+          </div>
+          <div class="field">
+            <label for="endDate">End Date</label>
+            <input id="endDate" type="date" name="">
+          </div>
+        </div>
+
+        <button id="addDate" class="btn btn-secondary">
+          <span>⚡</span> Define Dates
+        </button>
+
+        <div id="ADay2" class="feedback"></div>
+      </div>
+
+    </div>
+
+    <!-- Footer strip -->
+    <div class="chain-strip">
+      <div class="chain-item"><span class="chain-dot"></span> Network: Ethereum</div>
+      <div class="chain-item"><span class="chain-dot"></span> Contract: Active</div>
+      <div class="chain-item"><span class="chain-dot"></span> Admin: Connected</div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script>
+      // Demo feedback on button clicks (remove when wiring up real contract calls)
+      document.getElementById('addCandidate').addEventListener('click', function () {
+        const name = document.getElementById('name').value.trim();
+        const party = document.getElementById('party').value.trim();
+        const fb = document.getElementById('Aday');
+        if (name && party) {
+          fb.textContent = '✓ Candidate "' + name + '" queued for contract submission';
+          fb.classList.add('show');
+        } else {
+          fb.style.color = '#f87171';
+          fb.textContent = '⚠ Please fill in both fields';
+          fb.classList.add('show');
+          setTimeout(() => { fb.style.color = 'var(--success)'; }, 2000);
+        }
+      });
+
+      document.getElementById('addDate').addEventListener('click', function () {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const fb = document.getElementById('ADay2');
+        if (start && end) {
+          fb.textContent = '✓ Voting window set: ' + start + ' → ' + end;
+          fb.classList.add('show');
+        } else {
+          fb.style.color = '#f87171';
+          fb.textContent = '⚠ Please select both dates';
+          fb.classList.add('show');
+          setTimeout(() => { fb.style.color = 'var(--success)'; }, 2000);
+        }
+      });
+    </script>
+    <script src="../dist/app.bundle.js" type="module"></script>
+  </body>
+</html>

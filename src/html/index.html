@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Voting Page — Decentralized Voting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #080c14;
+        --surface: #0d1220;
+        --surface2: #111827;
+        --border: rgba(99, 179, 237, 0.15);
+        --accent: #38bdf8;
+        --accent2: #818cf8;
+        --success: #34d399;
+        --danger: #f87171;
+        --text: #e2e8f0;
+        --muted: #64748b;
+        --glow: 0 0 30px rgba(56, 189, 248, 0.12);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Syne', sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      body::after {
+        content: '';
+        position: fixed;
+        top: -200px; right: -200px;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(129,140,248,0.07) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ---- HEADER ---- */
+      #head {
+        position: relative;
+        z-index: 1;
+        padding: 48px 24px 32px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(56,189,248,0.04) 0%, transparent 100%);
+      }
+
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(56,189,248,0.08);
+        border: 1px solid rgba(56,189,248,0.25);
+        border-radius: 100px;
+        padding: 6px 16px;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        animation: fadeDown 0.6s ease both;
+      }
+
+      .badge-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 8px var(--success);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+      }
+
+      #head h1 {
+        font-size: clamp(22px, 4vw, 38px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        background: linear-gradient(135deg, #e2e8f0 30%, var(--accent) 70%, var(--accent2) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeDown 0.6s 0.1s ease both;
+      }
+
+      #head h2 {
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+        animation: fadeDown 0.6s 0.15s ease both;
+      }
+
+      .dates-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 16px;
+        background: rgba(129,140,248,0.08);
+        border: 1px solid rgba(129,140,248,0.2);
+        border-radius: 100px;
+        padding: 7px 18px;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        color: var(--accent2);
+        animation: fadeDown 0.6s 0.2s ease both;
+      }
+
+      @keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ---- LAYOUT ---- */
+      .main {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      /* ---- CARDS ---- */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 36px 40px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--glow), 0 4px 32px rgba(0,0,0,0.4);
+        animation: fadeUp 0.7s ease both;
+      }
+
+      .card:nth-child(2) { animation-delay: 0.1s; }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 160px; height: 160px;
+        background: radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 70%);
+        pointer-events: none;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+
+      .card-icon {
+        width: 42px; height: 42px;
+        border-radius: 12px;
+        background: rgba(56,189,248,0.1);
+        border: 1px solid rgba(56,189,248,0.2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.01em;
+      }
+
+      .card-subtitle {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+        font-weight: 400;
+      }
+
+      /* ---- CANDIDATES TABLE ---- */
+      .candidates-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+      }
+
+      .candidates-table thead tr th {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        padding: 0 20px 12px;
+        border-bottom: 1px solid var(--border);
+        font-weight: 700;
+        text-align: left;
+      }
+
+      .candidates-table thead tr th:last-child { text-align: right; }
+      .candidates-table thead tr th:nth-child(2) { text-align: center; }
+
+      /* Candidate rows injected by JS should use class "candidate-row" */
+      .candidates-table tbody tr {
+        background: var(--surface2);
+        border-radius: 12px;
+        transition: background 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+      }
+
+      .candidates-table tbody tr:hover {
+        background: rgba(56,189,248,0.06);
+        box-shadow: 0 0 0 1px rgba(56,189,248,0.2);
+      }
+
+      .candidates-table tbody tr.selected {
+        background: rgba(56,189,248,0.08);
+        box-shadow: 0 0 0 1.5px var(--accent);
+      }
+
+      .candidates-table tbody td {
+        padding: 16px 20px;
+        font-size: 15px;
+        color: var(--text);
+      }
+
+      .candidates-table tbody td:first-child {
+        border-radius: 12px 0 0 12px;
+        font-weight: 600;
+      }
+
+      .candidates-table tbody td:last-child {
+        border-radius: 0 12px 12px 0;
+        text-align: right;
+        font-family: 'Space Mono', monospace;
+        font-size: 13px;
+        color: var(--accent2);
+      }
+
+      .candidates-table tbody td:nth-child(2) {
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      /* vote count pill */
+      .vote-count {
+        display: inline-block;
+        background: rgba(129,140,248,0.12);
+        border: 1px solid rgba(129,140,248,0.2);
+        border-radius: 100px;
+        padding: 3px 12px;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        color: var(--accent2);
+      }
+
+      /* ---- VOTE SECTION ---- */
+      #vote {
+        margin-top: 28px;
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .vote-hint {
+        font-size: 13px;
+        color: var(--muted);
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .vote-hint span {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      #voteButton {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 32px;
+        border-radius: 12px;
+        border: none;
+        font-family: 'Syne', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+        background: linear-gradient(135deg, var(--accent) 0%, #0ea5e9 100%);
+        color: #080c14;
+        box-shadow: 0 4px 20px rgba(56,189,248,0.3);
+        transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #voteButton::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: white;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+
+      #voteButton:hover:not(:disabled)::after { opacity: 0.06; }
+      #voteButton:hover:not(:disabled) {
+        box-shadow: 0 6px 28px rgba(56,189,248,0.45);
+        transform: translateY(-1px);
+      }
+
+      #voteButton:active:not(:disabled) { transform: scale(0.97); }
+
+      #voteButton:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      #msg {
+        width: 100%;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        color: var(--success);
+        min-height: 18px;
+        margin-top: 4px;
+      }
+
+      #vote-box { width: 100%; }
+
+      /* ---- ACCOUNT STRIP ---- */
+      #account {
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid var(--border);
+        padding: 14px 24px;
+        display: flex;
+        justify-content: center;
+      }
+
+      #accountAddress {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+      }
+
+      /* ---- CHAIN STRIP ---- */
+      .chain-strip {
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid var(--border);
+        padding: 16px 24px;
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        flex-wrap: wrap;
+      }
+
+      .chain-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .chain-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 6px var(--success);
+      }
+
+      @media (max-width: 560px) {
+        .card { padding: 24px 20px; }
+        #vote { flex-direction: column; align-items: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- HEADER -->
+    <div id="head">
+      <div class="header-badge">
+        <span class="badge-dot"></span>
+        Voting Live
+      </div>
+      <h1>Decentralized Voting</h1>
+      <h2>Cast your vote on-chain</h2>
+      <div class="dates-badge">
+        🗓 Voting Dates: <span id="dates">Loading…</span>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- Candidates Card -->
+      <div id="candidate" class="card">
+        <div class="card-header">
+          <div class="card-icon">🏛️</div>
+          <div>
+            <div class="card-title">Candidates</div>
+            <div class="card-subtitle">Select a candidate below to cast your vote</div>
+          </div>
+        </div>
+
+        <table class="candidates-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Party</th>
+              <th>Total Votes</th>
+            </tr>
+          </thead>
+          <tbody id="boxCandidate"></tbody>
+        </table>
+
+        <div id="vote">
+          <p class="vote-hint">Select a candidate above, then click <span>Vote</span> to submit your transaction.</p>
+          <button id="voteButton" onclick="App.vote()" disabled>⚡ Vote</button>
+          <div id="msg"></div>
+          <div id="vote-box"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Account -->
+    <div id="account">
+      <p id="accountAddress"></p>
+    </div>
+
+    <!-- Footer strip -->
+    <div class="chain-strip">
+      <div class="chain-item"><span class="chain-dot"></span> Network: Ethereum</div>
+      <div class="chain-item"><span class="chain-dot"></span> Contract: Active</div>
+      <div class="chain-item"><span class="chain-dot"></span> Wallet: Connected</div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="../dist/app.bundle.js" type="module"></script>
+  </body>
+</html>

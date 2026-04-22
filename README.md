@@ -197,11 +197,11 @@ All 5 test cases passed:
 
 ## 👥 Team
 
-| Name | Roll No |
+| Name | App ID |
 |------|---------|
-| [Aaryan Sah] | [2306528] |
-| [Agniv Banerjee] | [2304952] |
-| [Aum Tripathi] | [2390080] |
+| Aaryan Sah | 2306528 |
+| Agniv Banerjee | 2304952 |
+| Aum Tripathi | 2390080 |
 
 
 ---

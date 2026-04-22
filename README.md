@@ -77,8 +77,8 @@ Full project documentation is available in the [GitHub Wiki](../../wiki):
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/aaryansah7/E-Voting-System-using-Blockchain-Ganache-MetaMask-.git
+cd E-Voting-System-using-Blockchain-Ganache-MetaMask-
 ```
 
 **2. Install Node.js dependencies**

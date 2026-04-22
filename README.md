@@ -95,11 +95,11 @@ pip install fastapi uvicorn mysql-connector-python python-dotenv PyJWT
 
 Create a `.env` file in the root directory:
 ```env
-MYSQL_USER=your_mysql_username
-MYSQL_PASSWORD=your_mysql_password
-MYSQL_HOST=localhost
-MYSQL_DB=voting_db
-SECRET_KEY=your_jwt_secret_key
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=database_name
+SECRET_KEY=your_secret_key
 ```
 
 **5. Set up the MySQL database**

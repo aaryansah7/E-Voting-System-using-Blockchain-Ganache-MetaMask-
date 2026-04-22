@@ -15,7 +15,7 @@
 
 | Login Page | Voting Page | Admin Panel |
 |-----------|------------|-------------|
-| ![Login](link-to-screenshot-login) | ![Voting](link-to-screenshot-voting) | ![Admin](link-to-screenshot-admin) |
+| ![Login](https://github.com/aaryansah7/E-Voting-System-using-Blockchain-Ganache-MetaMask-/issues/2#issue-4307001806) | ![Voting](link-to-screenshot-voting) | ![Admin](link-to-screenshot-admin) |
 
 > Replace the above links with your actual hosted screenshot URLs.
 
